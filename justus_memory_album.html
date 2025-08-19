@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>justus - Our Memory Album</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff8f0;
+            color: #333;
+            padding: 0 15px;
+        }
+        h1 {
+            color: #f08a5d;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        p.description {
+            text-align: center;
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: #7a5a45;
+        }
+        .upload-form {
+            background: #fff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 14px rgba(240, 138, 93, 0.2);
+            margin-bottom: 30px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        input[type="button"] {
+            background: #f08a5d;
+            border: none;
+            color: white;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        input[type="button"]:hover {
+            background: #d46b35;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+        }
+        .photo-card {
+            position: relative;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(240, 138, 93, 0.15);
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            transition: transform 0.2s ease-in-out;
+        }
+        .photo-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 26px rgba(240, 138, 93, 0.3);
+        }
+        .photo-card img {
+            width: 100%;
+            border-radius: 14px 14px 0 0;
+            object-fit: cover;
+            height: 180px;
+        }
+        .caption {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            color: #6b4c3b;
+            font-style: italic;
+            min-height: 45px;
+        }
+        .caption input {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 0.9rem;
+            border: 1px solid #e1bfa5;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <h1>justus - Our Memory Album</h1>
+    <p class="description">A personal space to upload and cherish photos from our adventures in Sethan, Kerala, Delhi NCR, and all the memories we build together.</p>
+
+    <div class="upload-form">
+        <form id="uploadForm" enctype="multipart/form-data" onsubmit="return false;">
+            <label for="photo">Select Photo(s):</label><br>
+            <input type="file" id="photo" name="photo" accept="image/*" multiple><br>
+            <input type="button" value="Upload" onclick="previewPhotos()">
+        </form>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <script>
+      // Store photos & captions
+      let photos = [];
+
+      function previewPhotos() {
+        const gallery = document.getElementById('gallery');
+        gallery.innerHTML = '';
+        photos = [];
+
+        const input = document.getElementById('photo');
+        const files = input.files;
+
+        for(let i=0; i<files.length; i++) {
+          const reader = new FileReader();
+
+          reader.onload = function(event) {
+            const photoData = { src: event.target.result, caption: '' };
+            photos.push(photoData);
+            renderGallery();
+          }
+          reader.readAsDataURL(files[i]);
+        }
+      }
+
+      function renderGallery() {
+        const gallery = document.getElementById('gallery');
+        gallery.innerHTML = '';
+
+        photos.forEach((photo, index) => {
+          const card = document.createElement('div');
+          card.className = 'photo-card';
+
+          const img = document.createElement('img');
+          img.src = photo.src;
+          img.alt = `Memory Photo ${index + 1}`;
+
+          const captionDiv = document.createElement('div');
+          captionDiv.className = 'caption';
+
+          const captionInput = document.createElement('input');
+          captionInput.type = 'text';
+          captionInput.placeholder = 'Add a caption (e.g., Delhi NCR 2024)';
+          captionInput.value = photo.caption;
+          captionInput.oninput = function(e) {
+            photos[index].caption = e.target.value;
+          };
+
+          captionDiv.appendChild(captionInput);
+          card.appendChild(img);
+          card.appendChild(captionDiv);
+
+          gallery.appendChild(card);
+        });
+      }
+    </script>
+</body>
+</html>
