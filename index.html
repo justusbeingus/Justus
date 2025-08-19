@@ -272,3 +272,30 @@
 </script>
 </body>
 </html>
+// On page load, retrieve saved notes from localStorage if available
+function loadNotes() {
+  const savedNotes = localStorage.getItem('vridhiNotes');
+  if (savedNotes) {
+    const parsedNotes = JSON.parse(savedNotes);
+    parsedNotes.forEach((note, index) => {
+      if (places[index]) {
+        places[index].note = note;
+      }
+    });
+  }
+}
+
+// Call this immediately after defining places array and before initial render
+loadNotes();
+
+// Update saveNote function to store notes persistently
+function saveNote() {
+  const activeIndex = Array.from(placeList.children).findIndex(li => li.classList.contains('active'));
+  if (activeIndex !== -1) {
+    places[activeIndex].note = noteInput.value;
+    // Save all notes in localStorage
+    const allNotes = places.map(place => place.note || '');
+    localStorage.setItem('vridhiNotes', JSON.stringify(allNotes));
+    alert('Your memory note has been saved!');
+  }
+}
