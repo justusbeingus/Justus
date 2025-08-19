@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>vridhi - Our Memory Album</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff8f0;
+    color: #5a3e2b;
+    padding: 0 15px 40px;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  .logo {
+    font-family: 'Pacifico', cursive;
+    font-weight: bold;
+    font-size: 2.6rem;
+    color: #f29e4c;
+    margin-right: 15px;
+    user-select: none;
+    cursor: default;
+    position: relative;
+  }
+  .logo::after {
+    content: "VR";
+    position: absolute;
+    top: -16px;
+    left: -28px;
+    font-size: 1.4rem;
+    font-family: monospace;
+    background: #f29e4c;
+    color: white;
+    padding: 2px 7px;
+    border-radius: 8px;
+    font-weight: 900;
+    user-select: none;
+  }
+  h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.8rem;
+  }
+  .description {
+    margin-bottom: 30px;
+    font-size: 1rem;
+    max-width: 680px;
+  }
+  .front-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px;
+    margin-bottom: 40px;
+  }
+  .front-gallery img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(242, 158, 76, 0.25);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  .front-gallery img:hover {
+    transform: scale(1.06);
+  }
+  .place-list {
+    list-style-type: none;
+    padding-left: 0;
+    max-width: 500px;
+    margin-bottom: 20px;
+  }
+  .place-item {
+    padding: 10px 15px;
+    border-radius: 12px;
+    background: #f7dcc1;
+    margin-bottom: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .place-item:hover {
+    background: #f29e4c;
+    color: white;
+  }
+  .place-item.active {
+    background: #f29e4c;
+    color: white;
+  }
+  .place-details {
+    background: #fff3de;
+    border-radius: 14px;
+    padding: 20px 22px;
+    max-width: 700px;
+    box-shadow: 0 8px 28px rgba(242, 158, 76, 0.4);
+  }
+  .place-details h2 {
+    margin-top: 0;
+    color: #b9611e;
+  }
+  .description-text {
+    font-style: italic;
+    color: #855c37;
+    margin-bottom: 20px;
+  }
+  .photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .photos img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(242, 158, 76, 0.25);
+  }
+  .note-input {
+    width: 100%;
+    background: #fff3de;
+    border: 1px solid #f29e4c;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 1em;
+    font-size: 0.9rem;
+    color: #5a3e2b;
+    resize: vertical;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" title="VR Initials Logo">vridhi</div>
+  <h1>Our Memory Album</h1>
+</header>
+<p class="description">A personal space to upload and cherish photos and memories from places we love — Sethan, Kerala, Delhi NCR, and many more to come.</p>
+
+<!-- Front page preview gallery of places -->
+<div class="front-gallery" id="frontGallery"></div>
+
+<!-- List of places -->
+<ul class="place-list" id="placeList"></ul>
+
+<!-- Place details / photos / notes -->
+<div class="place-details" id="placeDetails" style="display:none">
+  <h2 id="placeTitle"></h2>
+  <p class="description-text" id="placeMemory"></p>
+  <p class="description-text" id="placeHighlight"></p>
+  <p class="description-text" id="placeFavorite"></p>
+  <div class="photos" id="placePhotos"></div>
+  <textarea class="note-input" id="noteInput" placeholder="Write or update your memories here..."></textarea>
+  <button onclick="saveNote()" style="background:#f29e4c;color:white;padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:600">Save Notes</button>
+</div>
+
+<script>
+  // Data model for places and photos
+  const places = [
+    {
+      name: 'Sethan',
+      highlight: 'The serene backwaters and local flavors.',
+      bestMemory: 'Boat rides at sunset and cozy dinners.',
+      favoriteThing: 'How patient and joyful you were during every trip.',
+      photos: [
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=60',
+        'https://images.unsplash.com/photo-1534081333815-ae5019106622?auto=format&fit=crop&w=400&q=60'
+      ],
+      note: ''
+    },
+    {
+      name: 'Kerala',
+      highlight: 'Lush green hills and tranquil tea plantations.',
+      bestMemory: 'Early morning walks and local markets.',
+      favoriteThing: 'Your laughter echoing in the hills.',
+      photos: [
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=400&q=60',
+        'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=60'
+      ],
+      note: ''
+    },
+    {
+      name: 'Delhi NCR',
+      highlight: 'Bustling city streets and hidden gems.',
+      bestMemory: 'Strolling through old markets and trying street food.',
+      favoriteThing: 'How we discovered new places together every weekend.',
+      photos: [
+        'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=400&q=60',
+        'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=400&q=60'
+      ],
+      note: ''
+    }
+  ];
+
+  const frontGallery = document.getElementById('frontGallery');
+  const placeList = document.getElementById('placeList');
+  const placeDetails = document.getElementById('placeDetails');
+  const placeTitle = document.getElementById('placeTitle');
+  const placeMemory = document.getElementById('placeMemory');
+  const placeHighlight = document.getElementById('placeHighlight');
+  const placeFavorite = document.getElementById('placeFavorite');
+  const placePhotos = document.getElementById('placePhotos');
+  const noteInput = document.getElementById('noteInput');
+
+  function renderFrontGallery() {
+    frontGallery.innerHTML = '';
+    places.forEach(place => {
+      if (place.photos.length > 0) {
+        const img = document.createElement('img');
+        img.src = place.photos[0];
+        img.alt = `Photo from ${place.name}`;
+        img.title = place.name;
+        frontGallery.appendChild(img);
+      }
+    });
+  }
+
+  function renderPlaceList() {
+    placeList.innerHTML = '';
+    places.forEach((place, idx) => {
+      const li = document.createElement('li');
+      li.textContent = place.name;
+      li.className = 'place-item';
+      li.onclick = () => showPlaceDetails(idx);
+      placeList.appendChild(li);
+    });
+  }
+
+  function showPlaceDetails(index) {
+    const place = places[index];
+    placeTitle.textContent = place.name;
+    placeMemory.textContent = `Best memory: ${place.bestMemory}`;
+    placeHighlight.textContent = `Highlight: ${place.highlight}`;
+    placeFavorite.textContent = `Favorite thing about you: ${place.favoriteThing}`;
+
+    placePhotos.innerHTML = '';
+    place.photos.forEach(photoURL => {
+      const img = document.createElement('img');
+      img.src = photoURL;
+      img.alt = `Photo from ${place.name}`;
+      placePhotos.appendChild(img);
+    });
+
+    noteInput.value = place.note || '';
+
+    // Mark active place
+    Array.from(placeList.children).forEach((li, idx) => {
+      li.classList.toggle('active', idx === index);
+    });
+
+    placeDetails.style.display = 'block';
+  }
+
+  function saveNote() {
+    const activeIndex = Array.from(placeList.children).findIndex(li => li.classList.contains('active'));
+    if (activeIndex !== -1) {
+      places[activeIndex].note = noteInput.value;
+      alert('Your memory note has been saved!');
+    }
+  }
+
+  // Initial render
+  renderFrontGallery();
+  renderPlaceList();
+</script>
+</body>
+</html>
